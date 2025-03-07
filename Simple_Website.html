@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spotify Recommendation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        
+        body {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Left Section */
+        .left {
+            width: 50%;
+            background-color: #f6b654;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .left h1 {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .left p {
+            margin-top: 10px;
+            color: #444;
+            font-size: 1.2em;
+        }
+
+        .spotify-btn {
+            margin-top: 20px;
+            background-color: #1DB954;
+            color: white;
+            padding: 12px 20px;
+            font-size: 1.2em;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .spotify-btn:hover {
+            background-color: #189e46;
+        }
+
+        /* Right Section */
+        .right {
+            width: 50%;
+            background-color: #111;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .button {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            margin: 10px 0;
+            font-size: 1.5em;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+
+        .button:hover {
+            opacity: 0.8;
+        }
+
+        /* Different button colors */
+        .song { background-color: #74b9ff; }
+        .artist { background-color: #feca57; }
+        .genre { background-color: #ff6b6b; }
+    </style>
+</head>
+<body>
+
+    <!-- Left Section (Spotify Login) -->
+    <div class="left">
+        <h1>Connect Your Spotify</h1>
+        <p>Get personalized song, artist, and genre recommendations.</p>
+        <a href="{{ auth_url }}">
+            <button class="spotify-btn">Connect to Spotify</button>
+        </a>
+    </div>
+
+    <!-- Right Section (Navigation Buttons) -->
+    <div class="right">
+        <a href="songs.html" class="button song">🎵 Song Recommendations</a>
+        <a href="artists.html" class="button artist">🎤 Artist Recommendations</a>
+        <a href="genres.html" class="button genre">🎼 Genre Recommendations</a>
+    </div>
+
+    <!-- <script>
+        // Spotify Authentication
+        const CLIENT_ID = "a3769e57811345449b62397e842080dc";
+        const REDIRECT_URI = "http://127.0.0.1:5000/callback"; 
+        const SCOPES = "user-read-private user-read-email";
+
+        function connectSpotify() {
+            const authUrl = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=token&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=${encodeURIComponent(SCOPES)}`;
+            window.location.href = authUrl;
+        }
+    </script> -->
+
+</body>
+</html>
