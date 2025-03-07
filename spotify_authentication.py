@@ -27,7 +27,7 @@ user_auth = SpotifyOAuth(
 @app.route("/")
 def home():
     auth_url = user_auth.get_authorize_url()
-    return render_template("website.html", auth_url=auth_url)
+    return render_template("Simple_Website.html", auth_url=auth_url)
 
 @app.route("/callback")
 def callback():
