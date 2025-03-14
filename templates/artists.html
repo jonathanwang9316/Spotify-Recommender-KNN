@@ -92,5 +92,12 @@
 
     <!-- Left Section (Spotify Login) -->
     <div class="left">
-        <h1>Artist Recommendations</h1
+        <h1>Artist Recommendations</h1>
+        <p>Hey {{ user_name }}, discover new music based on your favorite artists.</p>
+        <button class="spotify-btn">Login with Spotify</button>
+    </div>
 
+    <div class="right">
+        <a href="{{ url_for('home') }}" class="button back">🔙 Back to Home</a>
+        <!-- You can add your genre recommendations here dynamically -->
+    </div>

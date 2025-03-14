@@ -93,7 +93,7 @@
     <!-- Left Section (Spotify Login) -->
     <div class="left">
         <h1>Song Recommendations</h1>
-        <p>Here are some song recommendations based on your Spotify preferences.</p>
+        <p>Hey {{ user_name }}, here are some song recommendations based on your Spotify preferences.</p>
         <a href="{{ auth_url }}">
             <button class="spotify-btn">Connect to Spotify</button>
         </a>
@@ -101,7 +101,7 @@
 
     <!-- Right Section (Navigation Button) -->
     <div class="right">
-        <a href="index.html" class="button back">🔙 Back to Home</a>
+        <a href="{{ url_for('home') }}" class="button back">🔙 Back to Home</a>
         <!-- You can add your song recommendations here dynamically -->
     </div>
 

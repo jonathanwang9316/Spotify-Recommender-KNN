@@ -36,11 +36,11 @@ def callback():
     if code:
         token_info = user_auth.get_access_token(code)
         session["token_info"] = token_info #sets token for the session to save login info
-        return redirect(url_for("dashboard"))
+        return redirect(url_for("songs"))
 
 
-@app.route("/dashboard")
-def dashboard():
+@app.route("/songs")
+def songs():
     token_info = session.get("token_info", None)
     if not token_info:
         return redirect(url_for("home")) #redirects to home if no successful token found
@@ -50,10 +50,34 @@ def dashboard():
 
     #eventually, this will redirect to a different dashboard page, but for now just
     #redirects to a html file with your username being displayed
-    return f''' 
-        <h1>Welcome, {user_info["display_name"]}</h1>
-        <p>Spotify Connected Successfully!</p>
-    '''
+    return render_template("songs.html", user_name = user_info["display_name"])
+
+@app.route("/genres")
+def genres():
+    token_info = session.get("token_info", None)
+    if not token_info:
+        return redirect(url_for("home")) #redirects to home if no successful token found
+
+    sp = spotipy.Spotify(auth=token_info["access_token"])
+    user_info = sp.current_user() #pulls user_info
+
+    #eventually, this will redirect to a different dashboard page, but for now just
+    #redirects to a html file with your username being displayed
+    return render_template("genres.html", user_name = user_info["display_name"])
+
+@app.route("/artists")
+def artists():
+    token_info = session.get("token_info", None)
+    if not token_info:
+        return redirect(url_for("home")) #redirects to home if no successful token found
+
+    sp = spotipy.Spotify(auth=token_info["access_token"])
+    user_info = sp.current_user() #pulls user_info
+
+    #eventually, this will redirect to a different dashboard page, but for now just
+    #redirects to a html file with your username being displayed
+    return render_template("artists.html", user_name = user_info["display_name"])
+
 
 if __name__ == "__main__":
     app.run(debug=True) #runs app
