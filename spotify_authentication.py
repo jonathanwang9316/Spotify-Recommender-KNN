@@ -3,6 +3,7 @@ import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials, SpotifyOAuth
 from dotenv import load_dotenv
 from flask import Flask, request, redirect, session, url_for, render_template
+import supabase_auth
 
 load_dotenv()
 
@@ -48,9 +49,12 @@ def songs():
     sp = spotipy.Spotify(auth=token_info["access_token"])
     user_info = sp.current_user() #pulls user_info
 
-    #eventually, this will redirect to a different dashboard page, but for now just
-    #redirects to a html file with your username being displayed
-    return render_template("songs.html", user_name = user_info["display_name"])
+    song_rec = supabase_auth.retrieve()
+    song_rec_url = search_song(song_name= song_rec["song_name"], artist= song_rec["artist"])
+    print(song_rec_url)
+
+
+    return render_template("songs.html", user_name = user_info["display_name"], song_rec_url = song_rec_url)
 
 @app.route("/genres")
 def genres():
@@ -61,8 +65,6 @@ def genres():
     sp = spotipy.Spotify(auth=token_info["access_token"])
     user_info = sp.current_user() #pulls user_info
 
-    #eventually, this will redirect to a different dashboard page, but for now just
-    #redirects to a html file with your username being displayed
     return render_template("genres.html", user_name = user_info["display_name"])
 
 @app.route("/artists")
@@ -78,6 +80,22 @@ def artists():
     #redirects to a html file with your username being displayed
     return render_template("artists.html", user_name = user_info["display_name"])
 
+#function that searches for a song on spotify based on supabase information
+def search_song(song_name, artist):
+    query = f"track:{song_name}"
+    query += f" artist:{artist}"
+
+    results = client_auth.search(q=query, type='track', limit=1)
+
+    if results['tracks']['items']:
+        track = results['tracks']['items'][0]
+        #generates embed version of url from standard url
+        standard_url = track['external_urls']['spotify']
+        track_id = standard_url.split("track/")[1]
+        return f"https://open.spotify.com/embed/track/{track_id}"
+
+    else:
+        return "No results found."
 
 if __name__ == "__main__":
     app.run(debug=True) #runs app

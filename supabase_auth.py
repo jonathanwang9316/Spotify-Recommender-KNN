@@ -11,6 +11,6 @@ key: str = os.getenv("SUPABASE_KEY")
 supabase: Client = create_client(supabase_url=url, supabase_key=key)
 
 #test retrieval of database
-test_response = supabase.table("Test").select("*").execute()
-for row in test_response.data:
-    print(f"Name: {row['name']}")
+def retrieve():
+    test_response = (supabase.table("Test").select("*").order("id", desc=False).execute())
+    return test_response.data[0]
