@@ -3,100 +3,187 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spotify Recommendation</title>
+    <title>Rhythm Finder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary-color: #1DB954;
+            --secondary-color: #191414;
+            --accent-yellow: #FFC700;
+            --gradient-purple: linear-gradient(135deg, #8A4FFF, #5E2BFF);
+            --gradient-orange: linear-gradient(135deg, #FF6B6B, #FF9F1C);
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: Arial, sans-serif;
+            font-family: 'Inter', sans-serif;
         }
         
         body {
             display: flex;
             height: 100vh;
+            overflow: hidden;
+            background: var(--secondary-color);
         }
 
         /* Left Section */
         .left {
             width: 50%;
-            background-color: #f6b654;
+            background: var(--gradient-purple);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            padding: 40px;
             text-align: center;
+            color: white;
+            position: relative;
+            transform: perspective(1000px) rotateY(10deg);
+            transition: transform 0.5s ease;
+        }
+
+        .left:hover {
+            transform: perspective(1000px) rotateY(0);
+        }
+
+        .left::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: rgba(255,255,255,0.1);
+            transform: rotate(-45deg);
+            z-index: 1;
         }
 
         .left h1 {
-            font-size: 2.5em;
-            font-weight: bold;
-            color: #333;
+            font-size: 3em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
         .left p {
-            margin-top: 10px;
-            color: #444;
             font-size: 1.2em;
+            color: rgba(255,255,255,0.8);
+            max-width: 400px;
+            margin-bottom: 30px;
         }
 
         .spotify-btn {
-            margin-top: 20px;
-            background-color: #1DB954;
-            color: white;
-            padding: 12px 20px;
+            background: var(--accent-yellow);
+            color: var(--secondary-color);
+            padding: 15px 30px;
             font-size: 1.2em;
             border: none;
             cursor: pointer;
-            border-radius: 5px;
+            border-radius: 50px;
+            font-weight: 600;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
 
         .spotify-btn:hover {
-            background-color: #189e46;
+            transform: translateY(-5px);
+            box-shadow: 0 15px 25px rgba(0,0,0,0.3);
+        }
+
+        .spotify-btn::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: rgba(255,255,255,0.2);
+            transform: rotate(45deg);
+            transition: all 0.5s ease;
+            opacity: 0;
+        }
+
+        .spotify-btn:hover::after {
+            opacity: 1;
         }
 
         /* Right Section */
         .right {
             width: 50%;
-            background-color: #111;
+            background: var(--secondary-color);
             display: flex;
             flex-direction: column;
             justify-content: center;
-            padding: 20px;
+            padding: 40px;
+            transform: perspective(1000px) rotateY(-10deg);
+            transition: transform 0.5s ease;
+        }
+
+        .right:hover {
+            transform: perspective(1000px) rotateY(0);
         }
 
         .button {
             display: flex;
             align-items: center;
-            padding: 15px;
-            margin: 10px 0;
+            padding: 20px;
+            margin: 15px 0;
             font-size: 1.5em;
             color: white;
             text-decoration: none;
-            font-weight: bold;
-            border-radius: 5px;
-            transition: 0.3s;
+            font-weight: 600;
+            border-radius: 15px;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.1);
+            transition: all 0.4s ease;
+        }
+
+        .button:hover::before {
+            left: 0;
         }
 
         .button:hover {
-            opacity: 0.8;
+            transform: scale(1.05);
         }
 
-        /* Different button colors */
-        .song { background-color: #74b9ff; }
-        .artist { background-color: #feca57; }
-        .genre { background-color: #ff6b6b; }
+        .song { 
+            background: linear-gradient(135deg, #3494E6, #59C4E8);
+            box-shadow: 0 10px 20px rgba(52,148,230,0.3);
+        }
+
+        .artist { 
+            background: linear-gradient(135deg, #FF6B6B, #FF9F1C);
+            box-shadow: 0 10px 20px rgba(255,107,107,0.3);
+        }
+
+        .genre { 
+            background: linear-gradient(135deg, #FF416C, #FF4B2B);
+            box-shadow: 0 10px 20px rgba(255,65,108,0.3);
+        }
     </style>
 </head>
 <body>
-
     <!-- Left Section (Spotify Login) -->
     <div class="left">
-        <h1>Connect Your Spotify</h1>
-        <p>Get personalized song, artist, and genre recommendations.</p>
+        <h1>Rhythm Finder</h1>
+        <p>Unlock your musical journey. Connect Spotify to discover personalized recommendations tailored just for you.</p>
         <a href="{{ auth_url }}">
-            <button class="spotify-btn">Connect to Spotify</button>
+            <button class="spotify-btn">Connect Spotify</button>
         </a>
     </div>
 
@@ -106,6 +193,8 @@
         <a href="{{ url_for('artists') }}" class="button artist">🎤 Artist Recommendations</a>
         <a href="{{ url_for('genres') }}" class="button genre">🎼 Genre Recommendations</a>
     </div>
+</body>
+</html>
 
     <!-- <script>
         // Spotify Authentication
@@ -118,6 +207,3 @@
             window.location.href = authUrl;
         }
     </script> -->
-
-</body>
-</html>
