@@ -1,9 +1,8 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spotify Recommendation</title>
+    <title>Genre Recommendations</title>
     <style>
         * {
             margin: 0;
@@ -11,7 +10,7 @@
             box-sizing: border-box;
             font-family: Arial, sans-serif;
         }
-        
+
         body {
             display: flex;
             height: 100vh;
@@ -83,41 +82,28 @@
             opacity: 0.8;
         }
 
-        /* Different button colors */
-        .song { background-color: #74b9ff; }
-        .artist { background-color: #feca57; }
-        .genre { background-color: #ff6b6b; }
+        .back {
+            background-color: #7f8c8d;
+        }
     </style>
 </head>
 <body>
 
     <!-- Left Section (Spotify Login) -->
     <div class="left">
-        <h1>Connect Your Spotify</h1>
-        <p>Get personalized song, artist, and genre recommendations.</p>
+        <h1>Genre Recommendations</h1>
+        <p>Hey {{ user_name }}, here are some genre recommendations based on your Spotify preferences.</p>
         <a href="{{ auth_url }}">
             <button class="spotify-btn">Connect to Spotify</button>
         </a>
     </div>
 
-    <!-- Right Section (Navigation Buttons) -->
+    <!-- Right Section (Navigation Button) -->
     <div class="right">
-        <a href="{{ url_for('songs') }}" class="button song">🎵 Song Recommendations</a>
-        <a href="{{ url_for('artists') }}" class="button artist">🎤 Artist Recommendations</a>
-        <a href="{{ url_for('genres') }}" class="button genre">🎼 Genre Recommendations</a>
+        <a href="{{ url_for('home') }}" class="button back">🔙 Back to Home</a>
+        <!-- You can add your genre recommendations here dynamically -->
     </div>
-
-    <!-- <script>
-        // Spotify Authentication
-        const CLIENT_ID = "a3769e57811345449b62397e842080dc";
-        const REDIRECT_URI = "http://127.0.0.1:5000/callback"; 
-        const SCOPES = "user-read-private user-read-email";
-
-        function connectSpotify() {
-            const authUrl = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=token&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=${encodeURIComponent(SCOPES)}`;
-            window.location.href = authUrl;
-        }
-    </script> -->
 
 </body>
 </html>
+

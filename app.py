@@ -3,6 +3,7 @@ import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials, SpotifyOAuth
 from dotenv import load_dotenv
 from flask import Flask, request, redirect, session, url_for, render_template
+import supabase_auth
 
 load_dotenv()
 
@@ -36,11 +37,40 @@ def callback():
     if code:
         token_info = user_auth.get_access_token(code)
         session["token_info"] = token_info #sets token for the session to save login info
-        return redirect(url_for("dashboard"))
+        return redirect(url_for("songs"))
+    else:
+        return redirect(url_for("home"))
 
 
-@app.route("/dashboard")
-def dashboard():
+@app.route("/songs")
+def songs():
+    token_info = session.get("token_info", None)
+    if not token_info:
+        return redirect(url_for("home")) #redirects to home if no successful token found
+
+    sp = spotipy.Spotify(auth=token_info["access_token"])
+    user_info = sp.current_user() #pulls user_info
+
+    song_rec = supabase_auth.retrieve()
+    song_rec_url = search_song(song_name= song_rec["song_name"], artist= song_rec["artist"])
+    print(song_rec_url)
+
+
+    return render_template("songs.html", user_name = user_info["display_name"], song_rec_url = song_rec_url)
+
+@app.route("/genres")
+def genres():
+    token_info = session.get("token_info", None)
+    if not token_info:
+        return redirect(url_for("home")) #redirects to home if no successful token found
+
+    sp = spotipy.Spotify(auth=token_info["access_token"])
+    user_info = sp.current_user() #pulls user_info
+
+    return render_template("genres.html", user_name = user_info["display_name"])
+
+@app.route("/artists")
+def artists():
     token_info = session.get("token_info", None)
     if not token_info:
         return redirect(url_for("home")) #redirects to home if no successful token found
@@ -50,10 +80,24 @@ def dashboard():
 
     #eventually, this will redirect to a different dashboard page, but for now just
     #redirects to a html file with your username being displayed
-    return f''' 
-        <h1>Welcome, {user_info["display_name"]}</h1>
-        <p>Spotify Connected Successfully!</p>
-    '''
+    return render_template("artists.html", user_name = user_info["display_name"])
+
+#function that searches for a song on spotify based on supabase information
+def search_song(song_name, artist):
+    query = f"track:{song_name}"
+    query += f" artist:{artist}"
+
+    results = client_auth.search(q=query, type='track', limit=1)
+
+    if results['tracks']['items']:
+        track = results['tracks']['items'][0]
+        #generates embed version of url from standard url
+        standard_url = track['external_urls']['spotify']
+        track_id = standard_url.split("track/")[1]
+        return f"https://open.spotify.com/embed/track/{track_id}"
+
+    else:
+        return "No results found."
 
 if __name__ == "__main__":
     app.run(debug=True) #runs app
