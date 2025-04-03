@@ -60,20 +60,6 @@
             z-index: 1;
         }
 
-        .left h1 {
-            font-size: 3em;
-            font-weight: 700;
-            margin-bottom: 15px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .left p {
-            font-size: 1.2em;
-            color: rgba(255,255,255,0.8);
-            max-width: 400px;
-            margin-bottom: 30px;
-        }
-
         .spotify-btn {
             background: var(--accent-yellow);
             color: var(--secondary-color);
@@ -87,6 +73,7 @@
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
+            z-index: 2; /* Ensure the button is above the ::before pseudo-element */
         }
 
         .spotify-btn:hover {
@@ -182,9 +169,7 @@
     <div class="left">
         <h1>Rhythm Finder</h1>
         <p>Unlock your musical journey. Connect Spotify to discover personalized recommendations tailored just for you.</p>
-        <a href="{{ auth_url }}">
-            <button class="spotify-btn">Connect Spotify</button>
-        </a>
+        <a href="{{ auth_url }}" class="spotify-btn">Connect Spotify</a>
     </div>
 
     <!-- Right Section (Navigation Buttons) -->
