@@ -24,6 +24,16 @@ X_scaled = scaler.fit_transform(X)
 knn = NearestNeighbors(n_neighbors=5, metric='euclidean') #fit the nearest neighbor model to our dataset's data
 knn.fit(X_scaled)
 
+def get_song_vars(song_list):
+    numerical_keys = [
+        'danceability', 'energy', 'key', 'loudness', 'mode', 'speechiness',
+        'acousticness', 'instrumentalness', 'liveness', 'valence', 'tempo', 'time_signature'
+    ]
+    values = np.array([[song[key] for key in numerical_keys] for song in song_list])
+    avg_values = np.mean(values, axis=0)
+    
+    return dict(zip(numerical_keys, avg_values))
+
 #def get_nearest_songs(spot, track_id, n_neighbors=5):
 def get_nearest_songs(n_neighbors=5):
     #track = get_track_data(spot, track_id) #get a song using track_data
