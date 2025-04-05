@@ -145,10 +145,15 @@
 
     <!-- Song Recommendations -->
     <div class="recommendations-container">
+        {% if song_rec_url %}
         <div class="recommendation-card">
-            <h3>Song Title 1</h3>
-            <p>Artist Name</p>
-            <p>Genre</p>
+            <h2>Song #1 🎵</h2>
+            <iframe class="spotify-embed" src="{{ song_rec_url }}" frameborder="0"
+                    allowtransparency="true" allow="autoplay; clipboard_write; encrypted-media;" loading="eager">
+            </iframe>
+            {% else %}
+            <p>No recommendations available right now.</p>
+            {% endif %}
         </div>
         <div class="recommendation-card">
             <h3>Song Title 2</h3>

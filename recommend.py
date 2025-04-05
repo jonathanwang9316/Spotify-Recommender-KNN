@@ -5,7 +5,9 @@ from sklearn.neighbors import NearestNeighbors
 import csv
 import unittest
 import numpy as np
-#from spotify_authentication import user_auth
+import app
+import requests
+
 
 data = pd.read_csv("dataset.csv") #read from dataset
 
@@ -24,22 +26,23 @@ X_scaled = scaler.fit_transform(X)
 knn = NearestNeighbors(n_neighbors=5, metric='euclidean') #fit the nearest neighbor model to our dataset's data
 knn.fit(X_scaled)
 
-#def get_nearest_songs(spot, track_id, n_neighbors=5):
-def get_nearest_songs(n_neighbors=5):
-    #track = get_track_data(spot, track_id) #get a song using track_data
-    song_data = np.array([0.676, 0.461, 1, -6.746, 0, 0.143, 0.0322, 1.01e-06, 0.358, 0.715, 87.917, 4]).reshape(1, -1)
+def get_nearest_songs(spot, track_id, access_token, n_neighbors=5):
+#def get_nearest_songs(n_neighbors=5):
+    track = get_track_data(spot, track_id, access_token)
 
-    '''song_data = np.array([
+    #song_data = np.array([0.676, 0.461, 1, -6.746, 0, 0.143, 0.0322, 1.01e-06, 0.358, 0.715, 87.917, 4]).reshape(1, -1)
+
+    song_data = np.array([
         track["danceability"], track["energy"], track["key"],
         track["loudness"], track["mode"], track["speechiness"],
         track["acousticness"], track["instrumentalness"], 
         track["liveness"], track["valence"], track["tempo"],
         track["time_signature"]
-    ]).reshape(1, -1) #put into array form'''
+    ]).reshape(1, -1) #put into array form
 
     song_data_scaled = scaler.transform(song_data) #scale song data using standardized scaler
 
-    distances, indices = knn.kneighbors(song_data) #find nearest neighbors
+    distances, indices = knn.kneighbors(song_data_scaled) #find nearest neighbors
 
     closest_songs = []
 
@@ -71,13 +74,14 @@ def extract_from_dataset(track_data):
         int(track_data["time_signature"])
     ]
 
-#spot = spotipy.Spotify(auth_manager=user_auth)
-
-'''def get_track_data(spot, track_id):
+def get_track_data(spot, track_id, access_token):
     track = spot.track(track_id)
-    track_features = spot.audio_features(track_id)[0]
-
+    url = f"https://api.spotify.com/v1/audio-features/{track_id}"
+    headers = {"Authorization": f"Bearer {access_token}"}
+    response = requests.get(url, headers=headers)
+    track_features = response.json()
     #artists = [artist['name'] for artist in track['artists']]
+    print(track_features)
 
     track_details = {
         'track_id': track['id'], 
@@ -100,7 +104,7 @@ def extract_from_dataset(track_data):
         'time_signature': track_features['time_signature']
         #'track_genre': track_features['danceability'] #cant find genre in api for specific tracks
     }
-    return track_details'''
+    return track_details
 
 def test_extract_from_dataset(): #unit test for extracting track data from current dataset
     track_data = data.iloc[0] 
@@ -109,10 +113,12 @@ def test_extract_from_dataset(): #unit test for extracting track data from curre
 
     print("Extracted song variables:", song_variables)
 
-def test_find_nearest_songs():
-    closest_songs = get_nearest_songs()
+def test_find_nearest_songs(access_token):
+    print(access_token)
+    sp = spotipy.Spotify(auth=access_token)
+    closest_songs = get_nearest_songs(sp, "3n3Ppam7vgaVa1iaRUc9Lp", access_token) #random test with stairway to heaven
 
     print("Nearest songs:", closest_songs)
 
 #test_extract_from_dataset()
-test_find_nearest_songs()
+#test_find_nearest_songs(access_token)

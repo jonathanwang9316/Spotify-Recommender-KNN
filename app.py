@@ -4,6 +4,7 @@ from spotipy.oauth2 import SpotifyClientCredentials, SpotifyOAuth
 from dotenv import load_dotenv
 from flask import Flask, request, redirect, session, url_for, render_template
 import supabase_auth
+import recommend
 
 load_dotenv()
 
@@ -21,13 +22,14 @@ user_auth = SpotifyOAuth(
     client_secret=CLIENT_SECRET,
     redirect_uri=REDIRECT_URI,
     #add to scope when new permission necessary
-    scope=["user-library-read", "playlist-modify-public", "user-read-playback-state", "user-modify-playback-state", "user-read-recently-played"]
+    scope=["user-library-read", "playlist-modify-public", "user-read-playback-state", "user-modify-playback-state", "user-read-recently-played", "user-read-private", "user-read-email"]
 )
 
 #default route, initializes website and connect button with auth_url
 @app.route("/")
 def home():
     auth_url = user_auth.get_authorize_url()
+    print(auth_url)
     return render_template("Simple_Website.html", auth_url=auth_url)
 
 @app.route("/callback")
@@ -47,13 +49,15 @@ def songs():
     token_info = session.get("token_info", None)
     if not token_info:
         return redirect(url_for("home")) #redirects to home if no successful token found
-
-    sp = spotipy.Spotify(auth=token_info["access_token"])
+    access_token = refresh_token() or token_info["access_token"]
+    sp = spotipy.Spotify(auth=access_token)
     user_info = sp.current_user() #pulls user_info
 
     song_rec = supabase_auth.retrieve()
     song_rec_url = search_song(song_name= song_rec["song_name"], artist= song_rec["artist"])
-    print(song_rec_url)
+    #print(recommend.test_find_nearest_songs(access_token))
+
+
 
 
     return render_template("songs.html", user_name = user_info["display_name"], song_rec_url = song_rec_url)
@@ -98,6 +102,25 @@ def search_song(song_name, artist):
 
     else:
         return "No results found."
+
+def refresh_token():
+    token_info = session.get("token_info", None)
+    if not token_info:
+        return None
+
+    sp_oauth = SpotifyOAuth(
+        client_id=CLIENT_ID,
+        client_secret=CLIENT_SECRET,
+        redirect_uri=REDIRECT_URI,
+        # add to scope when new permission necessary
+        scope=["user-library-read", "playlist-modify-public", "user-read-playback-state", "user-modify-playback-state",
+               "user-read-recently-played", "user-read-private"]
+    )
+    new_token_info = sp_oauth.refresh_access_token(token_info["refresh_token"])
+
+    # Update session with the new token
+    session["token_info"] = new_token_info
+    return new_token_info["access_token"]
 
 if __name__ == "__main__":
     app.run(debug=True) #runs app
