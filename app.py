@@ -22,7 +22,7 @@ user_auth = SpotifyOAuth(
     client_secret=CLIENT_SECRET,
     redirect_uri=REDIRECT_URI,
     #add to scope when new permission necessary
-    scope=["user-library-read", "playlist-modify-public", "user-read-playback-state", "user-modify-playback-state", "user-read-recently-played", "user-read-private", "user-read-email"]
+    scope=["user-library-read", "playlist-modify-public", "user-read-playback-state", "user-modify-playback-state", "user-read-recently-played", "user-read-private", "user-read-email", "user-top-read"]
 )
 
 #default route, initializes website and connect button with auth_url
@@ -52,15 +52,19 @@ def songs():
     access_token = refresh_token() or token_info["access_token"]
     sp = spotipy.Spotify(auth=access_token)
     user_info = sp.current_user() #pulls user_info
-
-    song_rec = supabase_auth.retrieve()
-    song_rec_url = search_song(song_name= song_rec["song_name"], artist= song_rec["artist"])
-    #print(recommend.test_find_nearest_songs(access_token))
+    user_top_tracks = get_top_5_tracks(access_token)
 
 
+    #song_rec = supabase_auth.retrieve()
+    #song_rec_url = search_song(song_name= song_rec["song_name"], artist= song_rec["artist"])
+    recommended_tracks = recommend.get_nearest_songs(user_top_tracks)
+    song_rec_urls = [search_song(song_name = rec[0], artist= rec[1]) for rec in recommended_tracks] #compiles urls of
 
 
-    return render_template("songs.html", user_name = user_info["display_name"], song_rec_url = song_rec_url)
+    return render_template("songs.html", user_name = user_info["display_name"],
+                           song_rec_url_1 = song_rec_urls[0], song_rec_url_2 = song_rec_urls[1],
+                           song_rec_url_3 = song_rec_urls[2], song_rec_url_4 = song_rec_urls[3],
+                           song_rec_url_5 = song_rec_urls[4])
 
 @app.route("/genres")
 def genres():
@@ -114,13 +118,19 @@ def refresh_token():
         redirect_uri=REDIRECT_URI,
         # add to scope when new permission necessary
         scope=["user-library-read", "playlist-modify-public", "user-read-playback-state", "user-modify-playback-state",
-               "user-read-recently-played", "user-read-private"]
+               "user-read-recently-played", "user-read-private", "user-top-read"]
     )
     new_token_info = sp_oauth.refresh_access_token(token_info["refresh_token"])
 
     # Update session with the new token
     session["token_info"] = new_token_info
     return new_token_info["access_token"]
+
+def get_top_5_tracks(access_token): #pulls the users top 5 tracks from the past month
+    sp = spotipy.Spotify(auth=access_token)
+    results = sp.current_user_top_tracks(limit=5, time_range='medium_term')
+    track_ids = [track["id"] for track in results["items"]]
+    return track_ids
 
 if __name__ == "__main__":
     app.run(debug=True) #runs app

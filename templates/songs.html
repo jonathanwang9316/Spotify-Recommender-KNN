@@ -145,35 +145,55 @@
 
     <!-- Song Recommendations -->
     <div class="recommendations-container">
-        {% if song_rec_url %}
+        {% if song_rec_url_1 %}
         <div class="recommendation-card">
             <h2>Song #1 🎵</h2>
-            <iframe class="spotify-embed" src="{{ song_rec_url }}" frameborder="0"
+            <iframe class="spotify-embed" src="{{ song_rec_url_1 }}" frameborder="0"
                     allowtransparency="true" allow="autoplay; clipboard_write; encrypted-media;" loading="eager">
             </iframe>
             {% else %}
             <p>No recommendations available right now.</p>
             {% endif %}
         </div>
+        {% if song_rec_url_2 %}
         <div class="recommendation-card">
-            <h3>Song Title 2</h3>
-            <p>Artist Name</p>
-            <p>Genre</p>
+            <h2>Song #2 🎵</h2>
+            <iframe class="spotify-embed" src="{{ song_rec_url_2 }}" frameborder="0"
+                    allowtransparency="true" allow="autoplay; clipboard_write; encrypted-media;" loading="eager">
+            </iframe>
+            {% else %}
+            <p>No recommendations available right now.</p>
+            {% endif %}
         </div>
+        {% if song_rec_url_3 %}
         <div class="recommendation-card">
-            <h3>Song Title 3</h3>
-            <p>Artist Name</p>
-            <p>Genre</p>
+            <h2>Song #3 🎵</h2>
+            <iframe class="spotify-embed" src="{{ song_rec_url_3 }}" frameborder="0"
+                    allowtransparency="true" allow="autoplay; clipboard_write; encrypted-media;" loading="eager">
+            </iframe>
+            {% else %}
+            <p>No recommendations available right now.</p>
+            {% endif %}
         </div>
+        {% if song_rec_url_4 %}
         <div class="recommendation-card">
-            <h3>Song Title 4</h3>
-            <p>Artist Name</p>
-            <p>Genre</p>
+            <h2>Song #4 🎵</h2>
+            <iframe class="spotify-embed" src="{{ song_rec_url_4 }}" frameborder="0"
+                    allowtransparency="true" allow="autoplay; clipboard_write; encrypted-media;" loading="eager">
+            </iframe>
+            {% else %}
+            <p>No recommendations available right now.</p>
+            {% endif %}
         </div>
+        {% if song_rec_url_5 %}
         <div class="recommendation-card">
-            <h3>Song Title 5</h3>
-            <p>Artist Name</p>
-            <p>Genre</p>
+            <h2>Song #5 🎵</h2>
+            <iframe class="spotify-embed" src="{{ song_rec_url_5 }}" frameborder="0"
+                    allowtransparency="true" allow="autoplay; clipboard_write; encrypted-media;" loading="eager">
+            </iframe>
+            {% else %}
+            <p>No recommendations available right now.</p>
+            {% endif %}
         </div>
     </div>
 
