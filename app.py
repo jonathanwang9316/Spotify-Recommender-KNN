@@ -3,7 +3,6 @@ import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials, SpotifyOAuth
 from dotenv import load_dotenv
 from flask import Flask, request, redirect, session, url_for, render_template
-import supabase_auth
 import recommend
 
 load_dotenv()
@@ -50,16 +49,25 @@ def songs():
     if not token_info:
         return redirect(url_for("home")) #redirects to home if no successful token found
     access_token = refresh_token() or token_info["access_token"]
+    print(access_token)
+    print(token_info["refresh_token"])
     sp = spotipy.Spotify(auth=access_token)
     user_info = sp.current_user() #pulls user_info
     user_top_tracks = get_top_5_tracks(access_token)
 
-
-    #song_rec = supabase_auth.retrieve()
     #song_rec_url = search_song(song_name= song_rec["song_name"], artist= song_rec["artist"])
     recommended_tracks = recommend.get_nearest_songs(user_top_tracks)
-    song_rec_urls = [search_song(song_name = rec[0], artist= rec[1]) for rec in recommended_tracks] #compiles urls of
+    song_rec_urls = []
+    seen_urls = set()
 
+    for rec in recommended_tracks:
+        curr_url = search_song(song_name = rec[0], artist= rec[1])
+        if curr_url != "No results found." and curr_url not in seen_urls: #ensures song was actually found on Spotify
+            song_rec_urls.append(curr_url)
+            seen_urls.add(curr_url)
+
+        if len(song_rec_urls) == 5: #stops once we have 5 urls
+            break
 
     return render_template("songs.html", user_name = user_info["display_name"],
                            song_rec_url_1 = song_rec_urls[0], song_rec_url_2 = song_rec_urls[1],

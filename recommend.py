@@ -46,9 +46,23 @@ def get_nearest_songs(user_top_tracks):
 
         sorted_tracks = sorted(tracks, key=lambda x: x.get("popularity", 0))
 
-        least_popular_tracks = sorted_tracks[:5]
+        #least_popular_tracks = sorted_tracks[:5]
 
-        tracks_to_return = [(track["trackTitle"], track["artists"][0]["name"]) for track in least_popular_tracks]
+        seen = set() #set to ensure no duplicates
+        tracks_to_return = []
+
+        for track in sorted_tracks:
+            title = track["trackTitle"]
+            artist = track["artists"][0]["name"]
+            key = (title, artist)
+            if key not in seen:
+                seen.add(key)
+                tracks_to_return.append(key) #add to list of tracks to return if not a duplicate
+
+            if len(tracks_to_return) == 15: #stop adding once we have 5
+                break
+
+        #tracks_to_return = [(track["trackTitle"], track["artists"][0]["name"]) for track in least_popular_tracks]
         print(tracks_to_return)
         return tracks_to_return
     else:
