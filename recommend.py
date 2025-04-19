@@ -72,6 +72,16 @@ def get_nearest_songs(user_top_tracks):
 
 
 '''
+def get_song_vars(song_list):
+    numerical_keys = [
+        'danceability', 'energy', 'key', 'loudness', 'mode', 'speechiness',
+        'acousticness', 'instrumentalness', 'liveness', 'valence', 'tempo', 'time_signature'
+    ]
+    values = np.array([[song[key] for key in numerical_keys] for song in song_list])
+    avg_values = np.mean(values, axis=0)
+    
+    return dict(zip(numerical_keys, avg_values))
+
 #def get_nearest_songs(n_neighbors=5):
     #track = get_track_data(spot, track_id, access_token)
 
