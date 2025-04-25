@@ -38,22 +38,24 @@ def callback():
     if code:
         token_info = user_auth.get_access_token(code)
         session["token_info"] = token_info #sets token for the session to save login info
-        return redirect(url_for("songs"))
+        return redirect(url_for("songs", time_range="oogabooga"))
     else:
         return redirect(url_for("home"))
 
 
-@app.route("/songs")
-def songs():
+@app.route("/songs/<time_range>")
+def songs(time_range):
     token_info = session.get("token_info", None)
     if not token_info:
         return redirect(url_for("home")) #redirects to home if no successful token found
+    if time_range not in ['short_term', 'medium_term', 'long_term']:
+        time_range = "short_term" #default term to short_term
     access_token = refresh_token() or token_info["access_token"]
     print(access_token)
     print(token_info["refresh_token"])
     sp = spotipy.Spotify(auth=access_token)
     user_info = sp.current_user() #pulls user_info
-    user_top_tracks = get_top_5_tracks(access_token)
+    user_top_tracks = get_top_5_tracks(access_token, time_range=time_range)
 
     #song_rec_url = search_song(song_name= song_rec["song_name"], artist= song_rec["artist"])
     recommended_tracks = recommend.get_nearest_songs(user_top_tracks)
@@ -134,9 +136,9 @@ def refresh_token():
     session["token_info"] = new_token_info
     return new_token_info["access_token"]
 
-def get_top_5_tracks(access_token): #pulls the users top 5 tracks from the past month
+def get_top_5_tracks(access_token, time_range): #pulls the users top 5 tracks from the past month
     sp = spotipy.Spotify(auth=access_token)
-    results = sp.current_user_top_tracks(limit=5, time_range='medium_term')
+    results = sp.current_user_top_tracks(limit=5, time_range=time_range)
     track_ids = [track["id"] for track in results["items"]]
     return track_ids
 
