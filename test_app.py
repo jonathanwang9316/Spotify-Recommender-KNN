@@ -46,7 +46,7 @@ class FlaskAppTests(unittest.TestCase):
 
     def test_songs_no_token(self):
         """Test songs route without a valid token"""
-        response = self.client.get('/songs')
+        response = self.client.get('/songs/short_term')
         self.assertEqual(response.status_code, 302)  # Should redirect to home
         self.assertIn(b'/', response.location.encode())
 
@@ -61,15 +61,15 @@ class FlaskAppTests(unittest.TestCase):
         with self.client.session_transaction() as sess:
             # Mock session with a valid token
             sess["token_info"] = { #access_token and refresh_token need to be updated with valid current tokens to test properly
-                "access_token": "BQCR3NRPKyvZpd66hbeZ2TllXMu1P_G5DvnO6lRNsZV-MIfujYeS6GbFjCwl5Fka_M5IjSS6wndvlutHrIjBqbTFlA6s3NpDN-dCLvY5neAsP6UD5vQ6pwtlfAtMrf_CI3PtEbuawD4W9Q38y8khc65o83Si4SBtsUr1nA_Xp-T_XMxnlbswOiT8LiCxu8dL9F_0AN8V1oBvJpazAnjRpCEKlViq3AQJ2RPBI29lqjkt8akAa1UPlzo7IwIZbN6CClnB5pLMzD154FnIGHR0kHeuae75JjEKFJIl9xPOWh8awjF5",
+                "access_token": "BQCYdR7Uqo7xu7eirvs78lCpcNaup-Z2WhnOgkJLSgMwXqWGEPv4dQ62B_9WxaMcGsmytFDZXhSAIhkslK7hkrsWOhZjGgCVImUUmNxDr-eVYdkX4WyNIIM-S-NGFWfa6gJrfo082UOopmLOj1sDorkvvJAsjs7mDuhJi_JiX30IgEwv7uHCAXxPNIxAAORhx3o1You_dXrlO947e9tEDPqNkcmpPX93s2ZPqpyksiMrnvaCMt0b2kvl9GjNeDvMT4-DNQm7nutsY3FFgTxwsCpwUVCetP3opbPw8TwiEgn7qBeA",
                 "token_type": "Bearer",
                 "expires_in": 3600,
                 "scope": "user-top-read",
                 "expires_at": 9999999999,
-                "refresh_token": "AQB1RGDwSmnuawcKEA0wg-va-l8NkjxWDnv7rALGoP17s9KX2JNd1kBzkvbuRH63DHqiLZYunr1_ITygeUx-hQrHvDuj7siNBC0c3d6EPM5zNdm4WyrseZyoz6vA9KvRdF0"
+                "refresh_token": "AQDDQ6sMLBhT3PLuIEeFPnt_XjCh16O9RlI_YBs8ZiQD5BYi4Cf1JL4RZiEHTeWcCWoDlWeGOw30IYk4X_Gv8pxaC-YvHIYUs9utcYLyjIg9GAjxxVVny7ZJS46wAl1ZSeE"
             }
 
-        response = self.client.get("/songs")
+        response = self.client.get("/songs/short_term")
         self.assertEqual(response.status_code, 200)
 
         soup = BeautifulSoup(response.data, 'html.parser')
@@ -93,6 +93,21 @@ class FlaskAppTests(unittest.TestCase):
 
         # Ensure all URLs are unique
         self.assertEqual(len(urls), len(set(urls)), "Duplicate URLs found in recommendations")
+
+    def test_valid_time_ranges(self): #makes sure all different term urls are functional
+        for term in ['short_term', 'medium_term', 'long_term']:
+            response = self.client.get(f'/songs/{term}', follow_redirects=True)
+            self.assertEqual(response.status_code, 200)
+
+    def test_invalid_time_ranges_defaults_to_short(self):
+        short_term_response = self.client.get('/songs/short_term')
+        short_term_data = short_term_response.get_data(as_text=True)
+
+        invalid_response = self.client.get('/songs/not_a_real_term', follow_redirects=True)
+        invalid_data = invalid_response.get_data(as_text=True)
+
+        self.assertEqual(invalid_response.status_code, 200)
+        self.assertIn('short_term', invalid_response.get_data(as_text=True)) #tests if an invalid term input correctly defaults to short_term link
 
 
 if __name__ == "__main__":

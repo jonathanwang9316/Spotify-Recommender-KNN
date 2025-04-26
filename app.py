@@ -38,7 +38,7 @@ def callback():
     if code:
         token_info = user_auth.get_access_token(code)
         session["token_info"] = token_info #sets token for the session to save login info
-        return redirect(url_for("songs", time_range="oogabooga"))
+        return redirect(url_for("songs", time_range="medium_term"))
     else:
         return redirect(url_for("home"))
 
