@@ -1,14 +1,57 @@
-import pandas as pd
-import spotipy
-from sklearn.preprocessing import StandardScaler
-from sklearn.neighbors import NearestNeighbors
+#import pandas as pd
+#import spotipy
+#from sklearn.preprocessing import StandardScaler
+#from sklearn.neighbors import NearestNeighbors
 import csv
 import unittest
-import numpy as np
+#import numpy as np
 import app
 import requests
 
+def recommend_songs(top_track_list, num_recs, mode):
+    url = "https://api.reccobeats.com/v1/track/recommendation"
 
+    params = {
+        "size": 50,
+        "seeds": top_track_list
+    }
+
+    headers = {
+        "Accept": "application/json"
+    }
+
+    response = requests.get(url, headers=headers, params=params)
+
+    if response.status_code == 200:
+        recommendations = response.json()
+        tracks = recommendations.get("content", [])
+
+        filtered_tracks = [
+            track for track in tracks
+            if track.get("id") != track_id
+        ][:num_recs]
+
+        sorted_tracks = sorted(filtered_tracks, key=lambda x: x.get("popularity", 0))
+        seen = set()
+        to_return = []
+
+        for track in sorted_tracks:
+            title = track["trackTitle"]
+            artist = track["artists"][0]["name"]
+            if mode == 'songs':
+                to_return.append((title, artist))
+            elif mode == 'artists':
+                if artist not in seen:
+                    seen.add(artist)
+                    to_return.append(artist) #add to list of tracks to return if not a duplicate
+
+            if len(to_return) == num_recs: #stop adding once we have 5
+               break
+
+    else:
+        print("Error:", response.status_code, response.text)
+
+'''
 data = pd.read_csv("dataset.csv") #read from dataset
 
 song_var = [
@@ -26,52 +69,6 @@ X_scaled = scaler.fit_transform(X)
 knn = NearestNeighbors(n_neighbors=5, metric='euclidean') #fit the nearest neighbor model to our dataset's data
 knn.fit(X_scaled)
 
-def get_nearest_songs(user_top_tracks):
-    url = "https://api.reccobeats.com/v1/track/recommendation"
-    params = {
-        "size": 50,
-        "seeds": [user_top_tracks[0], user_top_tracks[1], user_top_tracks[2], user_top_tracks[3], user_top_tracks[4]]
-    }
-
-    headers = {
-        'Accept': 'application/json'
-    }
-
-    response = requests.request("GET", url, headers=headers, params=params)
-
-    if response.status_code == 200:
-        track_data = response.json()  #parse response
-
-        tracks = track_data.get("content", [])
-
-        sorted_tracks = sorted(tracks, key=lambda x: x.get("popularity", 0))
-
-        #least_popular_tracks = sorted_tracks[:5]
-
-        seen = set() #set to ensure no duplicates
-        tracks_to_return = []
-
-        for track in sorted_tracks:
-            title = track["trackTitle"]
-            artist = track["artists"][0]["name"]
-            key = (title, artist)
-            if key not in seen:
-                seen.add(key)
-                tracks_to_return.append(key) #add to list of tracks to return if not a duplicate
-
-            if len(tracks_to_return) == 15: #stop adding once we have 5
-                break
-
-        #tracks_to_return = [(track["trackTitle"], track["artists"][0]["name"]) for track in least_popular_tracks]
-        print(tracks_to_return)
-        return tracks_to_return
-    else:
-        print("Error:", response.status_code, response.text)
-        return []
-
-
-
-'''
 def get_song_vars(song_list):
     numerical_keys = [
         'danceability', 'energy', 'key', 'loudness', 'mode', 'speechiness',
@@ -114,7 +111,7 @@ def get_song_vars(song_list):
         closest_songs.append(song_info)
 
     return closest_songs
-'''
+
 def extract_from_dataset(track_data):
     return [
         float(track_data["danceability"]),
@@ -178,4 +175,4 @@ def test_find_nearest_songs(access_token):
     print("Nearest songs:", closest_songs)
 
 #test_extract_from_dataset()
-#test_find_nearest_songs(access_token)
+#test_find_nearest_songs(access_token)'''
