@@ -39,7 +39,9 @@ def recommend_songs(top_track_list, num_recs, mode):
             title = track["trackTitle"]
             artist = track["artists"][0]["name"]
             if mode == 'songs':
-                to_return.append((title, artist))
+                if (title, artist) not in seen:
+                    seen.add((title, artist))
+                    to_return.append((title, artist))
             elif mode == 'artists':
                 if artist not in seen:
                     seen.add(artist)
