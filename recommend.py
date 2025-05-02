@@ -28,7 +28,7 @@ def recommend_songs(top_track_list, num_recs, mode):
 
         filtered_tracks = [
             track for track in tracks
-            if track.get("id") != track_id
+            if track.get("id") not in top_track_list
         ][:num_recs]
 
         sorted_tracks = sorted(filtered_tracks, key=lambda x: x.get("popularity", 0))
@@ -46,7 +46,7 @@ def recommend_songs(top_track_list, num_recs, mode):
                     to_return.append(artist) #add to list of tracks to return if not a duplicate
 
             if len(to_return) == num_recs: #stop adding once we have 5
-               break
+                return to_return
 
     else:
         print("Error:", response.status_code, response.text)
