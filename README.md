@@ -37,7 +37,7 @@ A high-performance machine learning system that predicts user music preferences 
 
 ---
 
-## 🏗️ Methodology
+## Methodology
 
 ### 1. Data Acquisition
 Utilized the **Spotify API** to extract audio features including:
